@@ -31,7 +31,7 @@ We use the following terms in bold to make our explanation more intuitive
 - The **last seen location** are is the coordinates of x_entry and y_entry of the final trajectory. While different devices have a different number of trajectory, all devices have a final trajectory and hence a last seen location. 
 - If the "last seen location" of the device is outside the boundary, we say that the device is **last seen inside**. Otherwise, the device is **last seen outside**. 
 - If the **final duration** (time_exit - time_entry) is zero, we say the device is **stationary**. Otherwise, the device is **not stationary**. Note that in the use of this term we are concerned with the last trajectory.
-- The **final location** is the co-ordinates of the last exit point. Note that this is not given in the test set.
+- The **final location** is the coordinates of the last exit point. Note that this is not given in the test set.
 - If the final location is inside the boundary, we say that the device **ends up inside**. Otherwise, the device **ends up outside**. We should return a target of 1.0 in our submission if we predict the device to end up inside; otherwise, we should return a value of 0.0.
 
 
@@ -62,7 +62,7 @@ If we predict the final location to be the last seen location, we get an F1 scor
 Surprisingly, at the end, many participants did not achieve such a score.
 
 ## Visualisations
-The stationary points has its last seen location equal to its final location.
+The stationary points have its last seen location equal to its final location.
 ![map_stationary.png](./map_stationary.png)
 
 The following two plots are for non-stationary points.
@@ -146,18 +146,59 @@ We discuss our approach and reflections.
 ### Benefits of our solution
 - No additional information used
 - Consistent documentation throughout (with the shape of array printed)
-- Fast training time and preprocessing time (except processing dataset into a numpy array and clustering last seen locations)
+- Fast training time and preprocessing time (except processing dataset into a numpy array and clustering the last seen locations)
 - Visualisation of more important features
 - Competitive public score of 0.89441
 
-### Analysis of the importance of features
-To be added
+### Feature analysis
+The LGBM model allows us to visualise the importance of the various features. In our understanding, `split` refers to how many times the feature is used and `gain` refers to how significant is the feature in training. Notably, `entry_in_0` - which refers to whether the device is last seen inside or outside - has a low split but a very large gain. 
 
+Feature importance - Split
+![feature_impt_split.png](./feature_impt_split.png)
+
+Feature importance - Gain
+![feature_impt_gain.png](./feature_impt_gain.png)
+Open the picture in a new screen to look at the importance of the features in detail. Note that the y-axis is logarithmic.
+
+Following is a table explaining the feature names. The feature name follows the dataframe header. `k` refers to the k-th last trajectory.
+
+| Feature name   | Explaination
+| ---------------| ------------
+| t_entry_{k}    | time_entry scaled down with 0 representing 3pm and 0.1 representing 4pm
+| t_exit_{k}     | time_exit scaled down similarly
+| x_entry_{k}    | x_entry scaled down with 0 representing centre of city and city boundary spanning (-1,1)
+| x_exit_{k}     | x_exit scaled down similarly
+| y_entry_{k}    | y_entry scaled down with 0 representing centre of city and city boundary spanning (-0.3,0.3)
+| y_exit_{k}     | y_exit scaled down similarly
+| vmax_{k}       | from source dataset
+| vmin_{k}       | from source dataset
+| vmean_{k}      | from source dataset
+| tid_0_{k}      | from trajectory_id, representing the trajectory number
+| tid_1_{k}      | from trajectory_id, representing the day of the month
+| entry_in_{k}   | whether the x_entry and y_entry is in the city boundary
+| exit_in_{k}    | whether the x_exit and y_exit is in the city boundary
+| dur_{k}        | t_exit - t_entry
+| dur_a_{k}      | t_exit - t_entry (of the previous trajectory)
+| dist_{k}       | Cartesian distance from the entry point to the exit point
+| dist_a_{k}     | Cartesian distance from the exit point to the entry point of the previous trajectory
+| speed_{k}      | Speed between the entry point and the exit point, stationary points have NaN speed.
+| speed_a_{k}    | Speed between the exit point and the entry point of the previous trajectory
+| dir_x_{k}      | Direction of the entry point to the exit point
+| dir_y_{k}      | The angle is parameterised because as the angle is modular
+| dir_x_a_{k}    | Direction of the exit point to the entry point of the previous trajectory 
+| dir_y_a_{k}    | The y-component of about, similarly
+| sum_entry_{k}  | Cluster feature of weighted average of the targets of the nearest last seen locations
+| sum_exit_{k}   | Same, but the analysed point is still placed on the map of last seen locations 
+| td{j}\_{k}     | Categorising the t_entry into bins of 1 hour - apparently it increased public score
+| e_{k}          | Embeddings from the neural network
+ 
 ### What could have done better
 - More systematic documentation. Understand how much each feature contribute how much to the score.
 - Parameter search. Requires script writing and resources more extensive than Kaggle.
 - Learn the theory behind the F1 score and the optimal threshold.
 - `eyn-original` takes 5 hours to run due to the creation of numerous dataframes.
+- Ensure categorical features are loaded properly since its warnings have not been resolved.
+- Shuffling of trajectories. The information of the 5th last trajectory could and should be used for the 7th last trajectory. What we see now is the very low split and gain for trajectories starting from the 3rd last - most of the dimensions in the input dataset are not used. The imbalance of information usage can be resolved by shuffling the NaN trajectories after every epoch so that trajectory feature could share the same importance. However, it is not easily implementable for LGBM.
 
 ### Learning points
 - Use of dataframes is worth the time investment, rather than working on numpy arrays.
