@@ -1,9 +1,11 @@
 # Ernst & Young NextWave Data Science Competition
-https://datascience.ey.com/challenge/1
+Collaborated with [Zheng Xingjian](https://github.com/mrrollingjerry) <br>
+Competition link: https://datascience.ey.com/challenge/1
+
 
 ## Results
 We are 6th globally and 3rd in Singapore, with a public F1 score of 0.89441 and private F1 score of 0.88923.
-- The kernel of the final submission: https://www.kaggle.com/huikang/eyn-df-lgbm-manyf?scriptVersionId=13913268
+- The kernel that produced the final submission: https://www.kaggle.com/huikang/eyn-df-lgbm-manyf?scriptVersionId=13913268
 
 ## Challenge
 The dataset is a set of anonymized geolocation data of multiple mobile devices in the City of Atlanta (US) for 11 working days in October 2018. In each "device", there may be up to 20 "trajectories". Each trajectory has the following information.
