@@ -46,17 +46,17 @@ The following shows the distributions on whether the points are last seen inside
 
 | Quantity       | Last seen inside | Last seen outside | Total
 | ---------------|------------------|-------------------|------
-| Stationary     | 19512            | 47486             | **66998**
-| Not stationary |                  |                   | **67065**
-| **Total**      | **38449**        | **95614**         | 
+| Stationary     | 19512            | 47486             | 66998  
+| Not stationary | 18937            | 48128             | 67065  
+| Total          | 38449            | 95614             | 134063
 
 ##### Testing set
 
 | Quantity       | Last seen inside | Last seen outside | Total
 | ---------------|------------------|-------------------|------
-| Stationary     |                  |                   | **16841**
-| Not stationary |                  |                   | **16674**
-| **Total**      | **9544**         | **23971**         | 
+| Stationary     |                  |                   | 16841
+| Not stationary |                  |                   | 16674
+| Total          | 9544             | 23971             | 35515
 
 #### Naive predictions
 If the point is stationary, the last seen location is the final location. 
@@ -194,6 +194,17 @@ Following is a table explaining the feature names. The feature name follows the 
 | td{j}\_{k}     | Categorising the t_entry into bins of 1 hour - apparently it increased public score
 | e_{k}          | Embeddings from the neural network
  
+##### F1 score for various data categories
+
+In [one kernel](https://www.kaggle.com/huikang/eyn-df-lgbm-citysplit) we separated the training into two groups, one for non-stationary points that are last seen inside, and non-stationary points that are last seen outside. No training is done for stationary points because we can assume that the final location is the last seen location. The F1 score presented is calculated over the validation set from each fold. There are only 4 folds as this kernel was constructed before we moved on to 10 folds. It shows the F1 score range for each of the data categories, and the observation that splitting the data categories to different training set does not increase LightGBM accuracy.
+
+| CV F1 score    | Last seen inside | Last seen outside | Total
+| ---------------|------------------|-------------------|------
+| Stationary     | 1.000            | 1.000             | 1.000
+| Not stationary | ~0.845           | ~0.375            | -
+| Total          | -                | -                 | 0.884
+ 
+ 
 ### What could have done better
 - More systematic documentation. Understand how much each feature contribute how much to the score.
 - Parameter search. Requires script writing and resources more extensive than Kaggle.
@@ -206,4 +217,4 @@ Following is a table explaining the feature names. The feature name follows the 
 - Use of dataframes is worth the time investment, rather than working on numpy arrays.
 - The problem of overfitting.
   - The best public leaderboard score may not be the best private leaderboard score. 
-  - Trusting your own CV score, avoid training on your validation set 
+  - Trusting your own CV score, avoid training on your validation set.
