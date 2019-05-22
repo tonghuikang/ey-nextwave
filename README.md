@@ -54,8 +54,8 @@ The following shows the distributions on whether the points are last seen inside
 
 | Quantity       | Last seen inside | Last seen outside | Total
 | ---------------|------------------|-------------------|------
-| Stationary     |                  |                   | 16841
-| Not stationary |                  |                   | 16674
+| Stationary     | 4861             | 11980             | 16841
+| Not stationary | 4683             | 11991             | 16674
 | Total          | 9544             | 23971             | 35515
 
 #### Naive predictions
@@ -137,7 +137,7 @@ We discuss our approach and reflections.
 - **Reversed order of trajectory** in the array. With the last trajectory is always at position zero, the last seen location, final duration and always at the same location. 
 - **10-fold cross validation**. This is a standard for datasets with this amount of data. The folds, which are stratified, are defined in `eyn_folds`.
 - **Use of the best threshold from the training set**. We find the best threshold from the cross-validated training data instead of 0.5. More theory or evidence is necessary to understand the merit of this measure.
-- **Retaining NaNs in dataframes.** We do not fill the NaN with numbers like zero, which has a different meant. It helps as LGBM allows NaNs as input.
+- **Retaining NaNs in dataframes.** We do not fill the NaN with numbers like zero, which has a different meaning. It helps as LGBM allows NaNs as input.
 - **Training features**
   - **Trival features** We computed the duration, speed and distance for each trajectory. We also computed the duration, speed and distance between adjacent trajectory (this entry point and the previous trajectory's exit point).
   - **Cluster features** We place the last seen location of the non-stationary points on a map. (As we suspect that the projected coordinates are warped, the y-coordinates is scaled down by a factor of 10). To generate the cluster features for each device analysed, we use its last seen location to find the nearest 10 last seen locations. Naturally, the first last seen location is itself, so we remove this result. This above is done in `eyn_df_cluster_unif`. 
