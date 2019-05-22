@@ -200,7 +200,7 @@ In [one kernel](https://www.kaggle.com/huikang/eyn-df-lgbm-citysplit) we separat
 
 | CV F1 score    | Last seen inside | Last seen outside | Total
 | ---------------|------------------|-------------------|------
-| Stationary     | 1.000            | 1.000             | 1.000
+| Stationary     | `all true`       | `all false`       | 1.000
 | Not stationary | ~0.845           | ~0.375            | -
 | Total          | -                | -                 | 0.884
  
