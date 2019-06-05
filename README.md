@@ -70,7 +70,7 @@ The stationary points have its last seen location equal to its final location.
 ![map_stationary.png](./map_stationary.png)
 
 The challenge is to predict the nonstationary points.
-![map_nonsta.png](./map_nonsta.png)
+![map_nonstat.png](./map_nonstat.png)
 
 We can see that the roads resembling veins are more visible in the scatter plot of non-stationary points. 
 The above visualisations in produced in https://www.kaggle.com/huikang/eyn-df-map
@@ -153,15 +153,7 @@ We discuss our approach and reflections.
 ### Feature analysis
 The LGBM model allows us to visualise the importance of the various features. In our understanding, `split` refers to how many times the feature is used and `gain` refers to how significant is the feature in training. Notably, `entry_in_0` - which refers to whether the device is last seen inside or outside - has a low split but a very large gain. 
 
-Overview of features
 ![feature_impt_split_gain.png](./feature_impt_split_gain.png)
-
-Feature importance - Split
-![feature_impt_split.png](./feature_impt_split.png)
-
-Feature importance - Gain
-![feature_impt_gain.png](./feature_impt_gain.png)
-Open the picture in a new screen to look at the importance of the features in detail. Note that the y-axis is logarithmic.
 
 Following is a table explaining the feature names. The feature name follows the dataframe header. `k` refers to the k-th last trajectory.
 
