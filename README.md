@@ -2,9 +2,9 @@
 Collaborated with [Zheng Xingjian](https://github.com/mrrollingjerry) <br>
 Competition link: https://datascience.ey.com/challenge/1
 
-
 ## Results
-We are 6th globally and 3rd in Singapore, with a public F1 score of 0.89441 and private F1 score of 0.88923.
+With a public F1 score of 0.89441 and private F1 score of 0.88923, we are 6th globally and 3rd in Singapore. 
+We also presented in Singapore finals, and we were third.
 - The kernel that produced the final submission: https://www.kaggle.com/huikang/eyn-df-lgbm-manyf?scriptVersionId=13913268
 
 ## Challenge
@@ -64,15 +64,13 @@ If we predict the final location to be the last seen location, we get an F1 scor
 Surprisingly, at the end, many participants did not achieve such a score.
 
 ## Visualisations
+The points plotted are the last seen location. Points that end up inside are in blue, and points at end up outside are in red.
+
 The stationary points have its last seen location equal to its final location.
 ![map_stationary.png](./map_stationary.png)
 
-The following two plots are for non-stationary points.
-- This following plot of non-stationary points emphasises those with a shorter final duration under 1 hour
-![map_nonstat_shortdur.png](./map_nonstat_shortdur.png)
-
-- This following plot of non-stationary points emphasises those with a longer final duration
-![map_nonstat_longdur.png](./map_nonstat_longdur.png)
+The challenge is to predict the nonstationary points.
+![map_nonsta.png](./map_nonsta.png)
 
 We can see that the roads resembling veins are more visible in the scatter plot of non-stationary points. 
 The above visualisations in produced in https://www.kaggle.com/huikang/eyn-df-map
@@ -155,6 +153,9 @@ We discuss our approach and reflections.
 ### Feature analysis
 The LGBM model allows us to visualise the importance of the various features. In our understanding, `split` refers to how many times the feature is used and `gain` refers to how significant is the feature in training. Notably, `entry_in_0` - which refers to whether the device is last seen inside or outside - has a low split but a very large gain. 
 
+Overview of features
+![feature_impt_split_gain.png](./feature_impt_split_gain.png)
+
 Feature importance - Split
 ![feature_impt_split.png](./feature_impt_split.png)
 
@@ -204,7 +205,12 @@ In [one kernel](https://www.kaggle.com/huikang/eyn-df-lgbm-citysplit) we separat
 | Not stationary | ~0.845           | ~0.375            | -
 | Total          | -                | -                 | 0.884
  
- 
+
+##### Journey of public leaderboard
+We started submitting the baseline solution of predicting final location as the last seen location. The sole use of cluster information improved our score to slightly above the baseline. NN models did not perform better than the baseline. However, LightGBM models were the breakthrough and brought us to the top. 10-fold cross validation made our solution more competitive. The addition of 'time dummy' brought us to the front page of the leaderboard. We tried ensemble and fine-tuning, but the improvement in results is insignificant.
+
+![public_LB.png](./public_LB.png)
+
 ### What could have done better
 - More systematic documentation. Understand how much each feature contribute how much to the score.
 - Parameter search. Requires script writing and resources more extensive than Kaggle.
@@ -212,9 +218,24 @@ In [one kernel](https://www.kaggle.com/huikang/eyn-df-lgbm-citysplit) we separat
 - `eyn-original` takes 5 hours to run due to the creation of numerous dataframes.
 - Ensure categorical features are loaded properly since its warnings have not been resolved.
 - Shuffling of trajectories. The information of the 5th last trajectory could and should be used for the 7th last trajectory. What we see now is the very low split and gain for trajectories starting from the 3rd last - most of the dimensions in the input dataset are not used. The imbalance of information usage can be resolved by shuffling the NaN trajectories after every epoch so that trajectory feature could share the same importance. However, it is not easily implementable for LGBM.
+- Use of map information. We only found out during the Singapore finals that the map provided is reflected and rotated. This would have given us opportunities to explore new techniques.
+- Multi-objective prediction. That was not possible with LightGBM, but possible with NN networks. However, our baseline NN networks were not strong enough.
 
 ### Learning points
 - Use of dataframes is worth the time investment, rather than working on numpy arrays.
 - The problem of overfitting.
   - The best public leaderboard score may not be the best private leaderboard score. 
   - Trusting your own CV score, avoid training on your validation set.
+  
+### Reflections from the Singapore finals
+In the Singapore finals, we presented our solutions together along with three other groups. We got third place.
+
+The sharing of findings is what motivates us to participate in this competition. Our initial objective is to get into Singapore top five for a chance to present our solution to experts and other competitors. We learnt a lot in the session, especially on presentation skills and styles.
+
+Our presentation could have been more suitable for the audience. The audience was unexpectedly large with about 40 people, and most of them are likely not to have a data background. Given the same set of slides, we presenters need to adapt our script to maximise the value of our presentation for all.
+
+Despite already having difficulty to fit the content into the time limit, there are some points that we should have mentioned. The pitch for potential applications could also be strengthened by providing some other insight for the data even though it is not directly relevant to the target objective. The audiences would also like to know what did not work along with what that worked. If we had known which part of Atlanta the map is sourced, our model and presentation would be more interesting.
+
+The main objective is not about maximising leaderboard score. Generally, our presentation is too technical and too concerned with increasing the F1 score. Rehearsals would have improved our time management. In essence, the data scientist needs to remember their purpose in the project. We have to address the business problem, and that is why we have an elaborate question statement. The presentation serves to show the usefulness of the proposed solution and potential applications.
+
+Ultimately, experience and introspection will make our future presentations better.
